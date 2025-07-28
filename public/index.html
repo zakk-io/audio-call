@@ -1,0 +1,81 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>audio call</title>
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+
+<!-- Control bar -->
+<div id="controls"
+     class="fixed bottom-4 inset-x-0 flex justify-center gap-6 pointer-events-none">
+
+  <!-- Mute everyone else  +  participant counter -->
+  <button id="speakerButton"
+          class="relative pointer-events-auto bg-gray-800 p-4 rounded-full text-white
+                 hover:bg-gray-700 focus:outline-none focus:ring"
+          title="Mute / Unmute others">
+    <i id="speakerIcon" class="fa-solid fa-volume-high text-xl"></i>
+
+    <!-- counter now lives here -->
+    <span id="participantCount"
+          class="absolute -top-2 -right-3 bg-red-500 h-5 min-w-[1.25rem]
+                 text-xs font-bold rounded-full flex items-center justify-center px-1">
+      1
+    </span>
+  </button>
+
+  <!-- Mute / un‑mute yourself -->
+  <button id="muteButton"
+          class="pointer-events-auto bg-gray-800 p-4 rounded-full text-white
+                 hover:bg-gray-700 focus:outline-none focus:ring"
+          title="Mute / Unmute">
+    <i id="muteIcon" class="fa-solid fa-microphone text-xl"></i>
+  </button>
+</div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="main.js"></script>
+
+<script>
+/* === Mute / un‑mute === */
+const muteBtn  = document.getElementById('muteButton');
+const muteIcon = document.getElementById('muteIcon');
+let isMuted = false;
+
+muteBtn.addEventListener('click', () => {
+  isMuted = !isMuted;
+  // toggle the local mic
+  objectStream.getAudioTracks()[0].enabled = !isMuted;
+  // swap icon
+  muteIcon.classList.toggle('fa-microphone');
+  muteIcon.classList.toggle('fa-microphone-slash');
+});
+
+
+
+/* === Mute / un‑mute everyone else === */
+const speakerBtn  = document.getElementById('speakerButton');
+const speakerIcon = document.getElementById('speakerIcon');
+let remoteMuted = false;
+
+speakerBtn.addEventListener('click', () => {
+  remoteMuted = !remoteMuted;
+
+  /* flip icon */
+  speakerIcon.classList.toggle('fa-volume-high');
+  speakerIcon.classList.toggle('fa-volume-xmark');
+
+  /* mute or unmute every <audio class="remote"> element */
+  document.querySelectorAll('audio.remote').forEach(a => {
+    a.muted = remoteMuted;             // HTMLMediaElement API :contentReference[oaicite:1]{index=1}
+  });
+});
+</script>
+</body>
+</html>
