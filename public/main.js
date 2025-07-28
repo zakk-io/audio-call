@@ -8,7 +8,7 @@ const configuration = {
 
 
 
-socket = io("");
+socket = io("https://audio-call-ffsa.onrender.com");
 
 
 let RTCPeersConnections = {}
